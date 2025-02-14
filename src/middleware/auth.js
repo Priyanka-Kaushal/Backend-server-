@@ -1,10 +1,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../modelsDb/User');
-// require("dotenv").config(); 
+require("dotenv").config(); 
 
 const generateToken = (user) => {
+  console.log("Generating token for user:", user);
   return jwt.sign(
-    { id: user._id, email: user.email },
+    { 
+      id: user.id, 
+      email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
@@ -13,7 +16,7 @@ const generateToken = (user) => {
 // Generate JWT Token
     const authToken = (newUser) => {
       return jwt.sign(
-        { id: newUser._id, email: newUser.email, role: newUser.role },
+        { id: newUser.id, email: newUser.email, role: newUser.role },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
@@ -49,6 +52,14 @@ const verifyToken = async (req, res, next) => {
 
     const decodedData = jwt.verify(bearerToken, process.env.JWT_SECRET);
     req.user = decodedData.user;
+     
+    console.log( decodedData.user)
+    req.user = {
+      id: decodedData.id,
+      email: decodedData.email,
+    };
+   
+    console.log("decodedData for user:", req.user);
 
     next();
   } catch (error) {

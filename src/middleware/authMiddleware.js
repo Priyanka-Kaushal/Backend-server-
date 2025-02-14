@@ -1,6 +1,5 @@
 // middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const User = require('../modelsDb/User');
 
 const authenticate = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -13,7 +12,9 @@ const authenticate = (req, res, next) => {
       return res.status(403).json({ message: 'Invalid token' });
     }
 
-    req.user = decoded;  // Attach user information (including role)
+ req.user = decoded;
+ 
+ console.log("decode:", decoded)// Attach user information (including role)
     next();
   });
 };
@@ -28,6 +29,21 @@ const authorize = (...roles) => {
   };
 };
 
+// const authenticateToken = (req, res, next) => {
+//   const token = req.header('Authorization')?.replace('Bearer ', '');
+
+//   if (!token) {
+//     return res.status(401).json({ message: "Access denied, no token provided" });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, 'your-secret-key');
+//     req.user = decoded;  // Adding decoded user data to the request object
+//     next();
+//   } catch (error) {
+//     res.status(400).json({ message: "Invalid token" });
+//   }
+// };
 
 
 module.exports = { authenticate, authorize };
