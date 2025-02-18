@@ -1,25 +1,25 @@
-
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
-// Ensure the "Images" directory exists
+// Define upload directory
+const uploadDir = path.join(__dirname, "../../public/uploads");
+// Ensure the directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure Multer Storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = "Images";
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    cb(null, `imageLion-${Date.now()}${path.extname(file.originalname)}`);
+    console.log("Uploading file:", file.originalname);
+    cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
   },
 });
 
-console.log("storage:", storage);
-// Initialize multer with the storage engine
 const upload = multer({ storage });
-console.log("uploadingggg:", upload);
 
-module.exports = upload; // ✅ Ensure `upload` is exported correctly
+module.exports = upload; 

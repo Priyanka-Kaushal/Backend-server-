@@ -1,0 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const { blogComment, commentDataget } = require("../controler/BlogComments/blogComments");
+const { authenticate } = require("../middleware/authMiddleware");
+
+router.post("/blogComment", authenticate, blogComment);
+router.get("/blogComment/:id", commentDataget);
+// commentDataget
+module.exports = router;

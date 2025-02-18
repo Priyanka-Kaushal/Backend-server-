@@ -12,18 +12,19 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    image: {
-      type: String,
-      required: true
-    },
+    image: 
+      {
+          type: String,
+          required: true,
+      },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    owner: {
-      type: String,
-    },
+    // owner: {
+    //   type: String,
+    // },
   },
   { timestamps: true }
 );
