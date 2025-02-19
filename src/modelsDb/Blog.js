@@ -22,9 +22,10 @@ const blogSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // owner: {
-    //   type: String,
-    // },
+    comments: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'BlogComment'
+     }]
   },
   { timestamps: true }
 );
