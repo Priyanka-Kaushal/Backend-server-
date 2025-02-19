@@ -14,7 +14,7 @@ const {
   registerPost,
   getPaginatedUsers,
   userProfileSearching,
-  userRoles_filter
+  userRoles_filter,
 } = require("../controler/auth");
 
 const { validateUser, deleteUser } = require("../controler/userControllers");

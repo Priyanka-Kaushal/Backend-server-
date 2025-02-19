@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-// const { Schema } = mongoose;
 
 // Define the user schema first
 const blogSchema = new mongoose.Schema(
@@ -12,20 +11,21 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    image: 
-      {
-          type: String,
-          required: true,
-      },
+    image: {
+      type: String,
+      required: true,
+    },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    comments: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'BlogComment'
-     }]
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "BlogComment",
+      },
+    ],
   },
   { timestamps: true }
 );

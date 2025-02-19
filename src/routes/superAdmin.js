@@ -3,7 +3,9 @@ const { body } = require("express-validator");
 // const {Permission} = require("../modelsDb/PermissionModel");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
-const { addPermission } = require("../controler/superAdmin/permissionController");
+const {
+  addPermission,
+} = require("../controler/superAdmin/permissionController");
 
 // Import validator
 const { permissionAddValidator } = require("../helpers/superAdminValidator");

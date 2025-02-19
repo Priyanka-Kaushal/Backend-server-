@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const JWT = require("../../middleware/auth");
 const Blog = require("../../modelsDb/Blog");
-const {upload} = require("../../middleware/uploadFile"); // Multer middleware for image upload
+const { upload } = require("../../middleware/uploadFile"); // Multer middleware for image upload
 const router = express.Router();
 const BlogCommentDb = require("../../modelsDb/comment");
 
@@ -19,9 +19,10 @@ const blogCurator = async (req, res) => {
         .status(400)
         .json({ error: "User authentication failed. ID missing." });
     }
-     
-    const image = req.file ? `http://localhost:3000/public/uploads/${req.file.filename}` : null;
- 
+
+    const image = req.file
+      ? `http://localhost:3000/public/uploads/${req.file.filename}`
+      : null;
 
     const newBlog = new Blog({
       title,
@@ -40,49 +41,20 @@ const blogCurator = async (req, res) => {
   }
 };
 
-    const blogDataGet = async (req, res) => {
-      try {
-        const blog = await Blog.findById(req.params.id)
-          .populate({
-            path: "comments",
-            select: "text", 
-          });
-    
-        if (!blog) return res.status(404).json({ message: "Blog not found" });
-    
-        res.status(200).json(blog);
-      } catch (error) {
-        res.status(500).json({ error: error.message });
-      }
-    };
-    
-//   try {            
-//     // console.log("body response :", req.body);
-//     // const blog = await Blog.findById(req.params.id).populate(
-//     //   "author", "first_name"
-//     // ).populate({ 
-//     //   path: "comments",
-//     //   select: "text"});
+const blogDataGet = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id).populate({
+      path: "comments",
+      select: "text",
+    });
 
-//     // console.log("blog comments ", blog);
-     
-//       //   const comment = new Comment({comment:req.body.comment});
-//       //  const commentNew =  await comment.save();
-//       //    console.log(commentNew);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-
-//     // await Blog.findOneAndUpdate({_id:req.body._id}, {$push: {comment}});
-//     const blogId = req.params.id;
-
-//     console.log(blogId);
-
-
-//   if (!blog) return res.status(404).json({ message: "Blog not found" });
-//     res.status(200).json(blog);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+    res.status(200).json(blog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const blogDataUpdate = async (req, res) => {
   try {
@@ -100,8 +72,6 @@ const blogDataUpdate = async (req, res) => {
 
     // Update the blog post with new data
     const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, {
-      // title: req.body.title,
-      // description: req.body.description,
       updatedAt: Date.now(),
       new: true, // Return the updated document
       runValidators: true, // Ensure the update follows schema validation
@@ -139,15 +109,21 @@ const blogDelete = async (req, res) => {
 const blogDataGetAll = async (req, res) => {
   try {
     // Assuming you are using MongoDB with Mongoose
-    const blogs = await Blog.find();  // Fetch all blogs from your Blog collection
+    const blogs = await Blog.find(); // Fetch all blogs from your Blog collection
     if (!blogs) {
       return res.status(404).json({ message: "No blogs found" });
     }
-    res.status(200).json(blogs);  // Return the list of blogs
+    res.status(200).json(blogs); // Return the list of blogs
   } catch (error) {
     // console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-module.exports = { blogCurator, blogDataGet, blogDataUpdate, blogDelete, blogDataGetAll };
+module.exports = {
+  blogCurator,
+  blogDataGet,
+  blogDataUpdate,
+  blogDelete,
+  blogDataGetAll,
+};
