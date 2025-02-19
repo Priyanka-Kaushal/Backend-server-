@@ -8,11 +8,8 @@ const Blog = require("../../modelsDb/Blog");
 
 const blogComment = async (req, res) => {
   try {
-    // console.log("Request Body:", req.body);
-
     const { text, blog } = req.body;
 
-    // console.log("User object:", req.user);
     if (!req.user || !req.user.id) {
       return res
         .status(400)
@@ -20,24 +17,19 @@ const blogComment = async (req, res) => {
     }
 
     const blogData = await Blog.findById(blog).select("title description");
-    // console.log("blogData:", blogData);
+
     if (!blogData) {
       return res.status(404).json({ error: "Blog not found." });
     }
 
-    // Create comment
     const newComment = new BlogCommentDb({
       text,
       author: req.user.id,
       blog: blogData._id,
     });
 
-    // console.log("newComment data:", newComment);
-
     const comment_data = await newComment.save();
-    // console.log("saved data:", comment_data);
 
-    // Push comment ID into Blog's `comments` array
     await Blog.findByIdAndUpdate(
       blogData._id,
       {
@@ -46,7 +38,6 @@ const blogComment = async (req, res) => {
       { new: true }
     );
 
-    // Populate author field after saving
     const populatedComment = await BlogCommentDb.findById(comment_data._id)
       .populate("author", "first_name")
       .populate({
@@ -71,8 +62,6 @@ const commentDataget = async (req, res) => {
         path: "blog",
         select: "title description",
       });
-
-    console.log("findBlogCommentById", findBlogCommentById);
 
     if (!findBlogCommentById) {
       return res.status(404).json({ error: "Comment not found" });

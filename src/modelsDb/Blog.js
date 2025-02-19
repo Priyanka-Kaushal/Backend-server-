@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Define the user schema first
 const blogSchema = new mongoose.Schema(
   {
     title: {
@@ -30,7 +29,6 @@ const blogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Create the User model using the userSchema
 const Blog = mongoose.model("Blog", blogSchema);
 
 module.exports = Blog;

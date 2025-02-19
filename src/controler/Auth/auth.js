@@ -1,12 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
-const User = require("../modelsDb/User");
+const User = require("../../modelsDb/User");
 const mongoose = require("mongoose");
-const { generateToken, authToken } = require("../middleware/auth");
+const { generateToken, authToken } = require("../../middleware/auth");
 
-// registraion in the role of customer, admin, super admin
-const registerPost = async (req, res) => {
+const registeration = async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -18,26 +17,20 @@ const registerPost = async (req, res) => {
   }
   const { first_name, last_name, email, password, role } = req.body;
 
-  // Allowed roles
   const allowedRoles = ["superadmin", "admin", "customer"];
 
-  // Validate role
   if (!role || !allowedRoles.includes(role)) {
     return res.status(400).json({ message: "Invalid or missing role" });
   }
 
   try {
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash the password before saving it
     const hashedPassword = await bcrypt.hash(password, 10);
-    // return hashedPassword;
 
-    // Create new user
     const newUser = new User({
       first_name,
       last_name,
@@ -46,12 +39,9 @@ const registerPost = async (req, res) => {
       role,
     });
 
-    //  new user data is saved
     const userData = await newUser.save();
 
-    //  auth token is created for the new user creation
     const tokenNewUser = authToken(newUser);
-    console.log(tokenNewUser);
 
     res.status(201).json({
       message: `${role} created successfully`,
@@ -63,8 +53,7 @@ const registerPost = async (req, res) => {
   }
 };
 
-// admin, super admin and customer all are able to login
-const loginUser = async (req, res) => {
+const login = async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -76,21 +65,15 @@ const loginUser = async (req, res) => {
   }
 
   const { email, password } = req.body;
-  console.log("body data:", req.body);
 
   try {
-    // Find user by email
     const user = await User.findOne({ email: email });
-
-    console.log("user info :", user);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // password compare  with user id already created
     const isMatchPassword = await user.comparePassword(password);
-    console.log("result password:", isMatchPassword);
 
     if (!isMatchPassword) {
       return res
@@ -98,8 +81,7 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Incorrect password" });
     }
 
-    // token export from middleware auth file
-    const token = await generateToken({ id: user._id, email: user.email});
+    const token = await generateToken({ id: user._id, email: user.email });
 
     res.status(200).json({
       message: "Logged in successfully",
@@ -107,7 +89,6 @@ const loginUser = async (req, res) => {
       token: token,
       tokenType: "Bearer",
       data: {
-        // token,
         user: {
           id: user.id,
           first_name: user.first_name,
@@ -118,7 +99,6 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
     res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -126,28 +106,26 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getPaginatedUsers = async (req, res) => {
+const fetchPagedUsers = async (req, res) => {
   try {
-    console.log("Query Params:", req.query);
     let { page = 1, limit = 5 } = req.query;
-   
-    page = parseInt(page) || 1; // Default to page 1
-    limit = parseInt(limit) || 5; // Default to 5 users per page
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 5;
     const skip = (page - 1) * limit;
-   
-    //Get total user count first
+
     const totalUsers = await User.countDocuments();
-    console.log({ message : "totalUsers"});
     const totalPages = Math.ceil(totalUsers / limit);
-    
-    // Fetch paginated users with limit
-    const users = await User.find({}, { first_name: 1 }).skip(skip).limit(limit).sort({ createdAt: -1 });
-    console.log("Fetched Users:", users);
-    
-    if(!users){
-      res.status(404).json({message: "Users data not found"});
-   }
-    // Send a single response
+
+    const users = await User.find({}, { first_name: 1 })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    if (!users) {
+      res.status(404).json({ message: "Users data not found" });
+    }
+
     res.json({
       totalUsers,
       page,
@@ -155,7 +133,7 @@ const getPaginatedUsers = async (req, res) => {
       users,
       message: "User pagination successful",
     });
-    
+
     return res.json({
       totalUsers,
       page,
@@ -170,32 +148,26 @@ const getPaginatedUsers = async (req, res) => {
   }
 };
 
-
-const userProfileSearching = async (req, res) => {
+const searchProfile = async (req, res) => {
   try {
-      console.log("message :", req.params.key);
-    const searchKey = req.params.key; // Now using req.params.key
-    
-    console.log("searchKey :", searchKey);
+    const searchKey = req.params.key;
+
     if (!searchKey) {
       return res.status(400).json({ message: "Search key is required" });
     }
 
-    const userProfileSearch = await User.find(
-      {
-        "$or": [
-          { "first_name": { $regex: searchKey, $options: "i" } }, // Case-insensitive search
-          { "email": { $regex: searchKey, $options: "i" } }
-        ]
-      }
-    ).lean();
+    const userProfileSearch = await User.find({
+      $or: [
+        { first_name: { $regex: searchKey, $options: "i" } },
+        { email: { $regex: searchKey, $options: "i" } },
+      ],
+    }).lean();
 
     if (userProfileSearch.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }
 
     res.status(200).json({ users: userProfileSearch });
-
   } catch (error) {
     if (!res.headersSent) {
       res.status(500).json({ message: error.message });
@@ -203,23 +175,11 @@ const userProfileSearching = async (req, res) => {
   }
 };
 
-
-const userRoles_filter = async(req, res) => {
-  try{
-    console.log(req.query); 
-
-    // Extract role from query parameters
+const roleFilter = async (req, res) => {
+  try {
     const { role } = req.query;
-    
-    // Ensure role exists in query before filtering
-    // const filter = role ? { role } : {};  
 
-    // Fetch users based on the filter
-    // const data = await User.find( filter);
-    // const data = await User.find( {role: req.query.role}); //we will add the + if we want value in numbers
-    // const data = await User.find( req.query);
     const data = await User.find().where("role").equals(req.query.role);
-    console.log("Filtered users:", data);
 
     if (data.length === 0) {
       return res.status(404).json({
@@ -229,26 +189,25 @@ const userRoles_filter = async(req, res) => {
       });
     }
 
-  res.status(200).json({
-    status: "success",
-    message: `${role} filtered successfully`,
-    data,
-  });
-  }catch(error){
+    res.status(200).json({
+      status: "success",
+      message: `${role} filtered successfully`,
+      data,
+    });
+  } catch (error) {
     if (!res.headersSent) {
-      res.status(500).json({ 
+      res.status(500).json({
         status: "false",
-         message: error.message 
-        });
+        message: error.message,
+      });
     }
   }
-}
-
+};
 
 module.exports = {
-  registerPost,
-  loginUser,
-  getPaginatedUsers,
-  userProfileSearching,
-  userRoles_filter
+  registeration,
+  login,
+  fetchPagedUsers,
+  searchProfile,
+  roleFilter,
 };

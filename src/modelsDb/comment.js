@@ -8,12 +8,12 @@ const BlogCommentSchema = new mongoose.Schema(
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Referencing the User model
+      ref: "User",
       required: true,
     },
     blog: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Blog", // Referencing the Blog model
+      ref: "Blog",
       required: true,
     },
   },

@@ -10,19 +10,21 @@ const { authenticate, authorize } = require("../middleware/authMiddleware");
 
 // Controller imports (ensure the folder name is correct)
 const {
-  loginUser,
-  registerPost,
-  getPaginatedUsers,
-  userProfileSearching,
-  userRoles_filter,
-} = require("../controler/auth");
+  registeration,
+  login,
+  fetchPagedUsers,
+  searchProfile,
+  roleFilter,
+} = require("../controler/Auth/auth");
 
-const { validateUser, deleteUser } = require("../controler/userControllers");
+const {
+  validateUser,
+  deleteUser,
+} = require("../controler/Auth/userControllers");
 const { registerValidator, loginValidator } = require("../helpers/validator");
-// Register route
-router.post("/register", registerValidator, registerPost);
 
-// Validate registration (Superadmin only) and rights had only superadmin
+router.post("/register", registerValidator, registeration);
+
 router.get(
   "/validateRegister",
   authenticate,
@@ -30,14 +32,13 @@ router.get(
   validateUser
 );
 
-router.get("/usersPagination", getPaginatedUsers);
+router.get("/usersPagination", fetchPagedUsers);
 
-router.get("/userSearch/:key", userProfileSearching);
+router.get("/userSearch/:key", searchProfile);
 
-router.get("/userRoleFilter", userRoles_filter);
+router.get("/userRoleFilter", roleFilter);
 
-// Login route
-router.post("/login", loginValidator, loginUser);
+router.post("/login", loginValidator, login);
 
 router.delete("/deleteUser", authenticate, deleteUser);
 module.exports = router;

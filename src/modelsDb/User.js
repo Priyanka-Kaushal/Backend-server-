@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const { Schema } = mongoose;
 const validator = require("validator");
 
-// Define the user schema first
 const userSchema = new mongoose.Schema(
   {
     first_name: {
@@ -47,7 +46,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Pre-save hook to hash the password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
@@ -55,13 +53,10 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Method to compare entered password with hashed password
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  console.log(" compare :", enteredPassword);
   return bcrypt.compareSync(enteredPassword, this.password);
 };
 
-// Create the User model using the userSchema
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

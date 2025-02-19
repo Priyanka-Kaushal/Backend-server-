@@ -10,8 +10,6 @@ const {
 } = require("../controler/Blogs/blogs");
 const upload = require("../middleware/uploadFile");
 
-// console.log("Upload Middleware:", upload);// Debugging
-
 router.post("/blogPost", verifyToken, upload.single("imageNew"), blogCurator);
 
 router.get("/blogpost/:id", blogDataGet);

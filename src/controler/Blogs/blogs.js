@@ -8,11 +8,7 @@ const BlogCommentDb = require("../../modelsDb/comment");
 
 const blogCurator = async (req, res) => {
   try {
-    // console.log("Request Body:", req.body);
-    // console.log("Uploaded File:", req.file);
-
     const { title, description } = req.body;
-    // console.log("Authenticated User:", req.user);
 
     if (!req.user || !req.user.id) {
       return res
@@ -32,8 +28,6 @@ const blogCurator = async (req, res) => {
     });
 
     const savedBlog = await newBlog.save();
-
-    // console.log("dataatatatatatatt save:", savedBlog);
 
     res.status(201).json({ message: "Blog created", blog: savedBlog });
   } catch (error) {
@@ -58,48 +52,38 @@ const blogDataGet = async (req, res) => {
 
 const blogDataUpdate = async (req, res) => {
   try {
-    // Extract the blog post ID from the request parameters
     const blogId = req.params.id;
-    // console.log("request data:", postId);
 
-    // Retrieve the existing blog post from the database
     const existingBlogPost = await Blog.findById(blogId);
-    // console.log("Data retrieved:", existingBlogPost);
 
     if (!existingBlogPost) {
       return res.status(404).json({ message: "Blog post not found" });
     }
 
-    // Update the blog post with new data
     const updatedBlog = await Blog.findByIdAndUpdate(blogId, req.body, {
       updatedAt: Date.now(),
-      new: true, // Return the updated document
-      runValidators: true, // Ensure the update follows schema validation
+      new: true,
+      runValidators: true,
     });
-
-    // console.log("Blog after update:", updatedBlog);
-
     return res
       .status(200)
       .json({ message: "Blog updated successfully", updatedBlog });
   } catch (error) {
-    // console.error("Error updating blog:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 const blogDelete = async (req, res) => {
   try {
-    const postId = req.params.id;
-    // console.log("request data:", postId);
+    const blogId = req.params.id;
 
-    const blog = await Blog.findById(postId);
+    const blog = await Blog.findById(blogId);
     if (!blog) {
       res.status(404).json({ message: "Blog not found" });
     }
 
     const deleteBlogByid = await Blog.findByIdAndDelete(req.params.id);
-    // console.log("Blog after delte:", deleteBlogByid);
+
     res.status(200).json({ message: "Blog deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -108,14 +92,12 @@ const blogDelete = async (req, res) => {
 
 const blogDataGetAll = async (req, res) => {
   try {
-    // Assuming you are using MongoDB with Mongoose
-    const blogs = await Blog.find(); // Fetch all blogs from your Blog collection
+    const blogs = await Blog.find();
     if (!blogs) {
       return res.status(404).json({ message: "No blogs found" });
     }
-    res.status(200).json(blogs); // Return the list of blogs
+    res.status(200).json(blogs);
   } catch (error) {
-    // console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
