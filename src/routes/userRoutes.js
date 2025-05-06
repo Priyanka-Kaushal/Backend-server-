@@ -15,18 +15,18 @@ const {
   getPaginatedUsers,
   userProfileSearching,
   userRoles_filter,
-} = require("../controler/auth");
+} = require("../controller/auth");
 
-const { validateUser, deleteUser } = require("../controler/userControllers");
+const { validateUser, deleteUser } = require("../controller/userControllers");
 const { registerValidator, loginValidator } = require("../helpers/validator");
 // Register route
 router.post("/register", registerValidator, registerPost);
 
-// Validate registration (Superadmin only) and rights had only superadmin
+// Validate registration (admin only) and rights had only admin
 router.get(
   "/validateRegister",
   authenticate,
-  authorize("superadmin"),
+  authorize("Admin"),
   validateUser
 );
 

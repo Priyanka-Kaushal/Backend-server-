@@ -17,9 +17,15 @@ const registerPost = async (req, res) => {
     });
   }
   const { first_name, last_name, email, password, role } = req.body;
+  console.log("bodyyyyyy :", req.body);
 
+
+
+
+  
+    
   // Allowed roles
-  const allowedRoles = ["superadmin", "admin", "customer"];
+  const allowedRoles = ["admin", "customer"];
 
   // Validate role
   if (!role || !allowedRoles.includes(role)) {
@@ -46,7 +52,9 @@ const registerPost = async (req, res) => {
       role,
     });
 
-    //  new user data is saved
+
+    console.log("newwwww user: ", newUser);
+    //  new user data is savedclea
     const userData = await newUser.save();
 
     //  auth token is created for the new user creation
@@ -62,6 +70,8 @@ const registerPost = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
 
 // admin, super admin and customer all are able to login
 const loginUser = async (req, res) => {

@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   blogComment,
   commentDataget,
-} = require("../controler/BlogComments/blogComments");
+} = require("../controller/BlogComments/blogComments");
 const { authenticate } = require("../middleware/authMiddleware");
 
 router.post("/blogComment", authenticate, blogComment);

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // Define the user schema first
 const userPermissionSchema = new mongoose.Schema(
   {
-    // which kind of permission acces by the user lik customer, admin, superadmin etc
+    // which kind of permission acces by the user lik customer, admin, admin etc
     user_id: {
       type: mongoose.Schema.ObjectId,
       required: true,

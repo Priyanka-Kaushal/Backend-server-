@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 
-// Fetch all users, accessible only by superadmin
+// Fetch all users, accessible only by admin
 const validateUser = async (req, res) => {
   try {
-    // Only superadmin can validate users
-    if (req.user.role !== 'superadmin') {
+    // Only admin can validate users
+    if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'You are not authorized to access this resource' });
     }
     
@@ -36,10 +36,10 @@ const deleteUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid User ID format" });
     }
 
-    // Ensure the requester is a superadmin if deleting another user
-    if (req.user.role !== "superadmin" && userIdToDelete !== req.user.id) {
+    // Ensure the requester is a admin if deleting another user
+    if (req.user.role !== "admin" && userIdToDelete !== req.user.id) {
       return res.status(403).json({
-        message: "Access Denied: Only Superadmin can delete other users, or you can only delete your own account"
+        message: "Access Denied: Only Admin can delete other users, or you can only delete your own account"
       });
     }
 

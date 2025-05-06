@@ -7,7 +7,7 @@ const {
   blogDataUpdate,
   blogDelete,
   blogDataGetAll,
-} = require("../controler/Blogs/blogs");
+} = require("../controller/Blogs/blogs");
 const upload = require("../middleware/uploadFile");
 
 // console.log("Upload Middleware:", upload);// Debugging

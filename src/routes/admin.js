@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const {
   addPermission,
-} = require("../controler/superAdmin/permissionController");
+} = require("../controller/accessPermission/permissionController");
 
 // Import validator
-const { permissionAddValidator } = require("../helpers/superAdminValidator");
+const { permissionAddValidator } = require("../helpers/adminValidator");
 
 // Register route
 router.post("/add-permission", permissionAddValidator, addPermission);
