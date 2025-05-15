@@ -40,20 +40,50 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "customer"],
-      default: "customer", //0 -> normal user, 1-> admin, 2-> super admin,
+      enum: ["superadmin", "admin", "user"],
+      default: "user", //0 -> normal user, 1-> admin, 2-> super admin,
     },
+
+   
+    isVerified: { type: Boolean, default: false }, // Email verification flag
   },
   { timestamps: true }
 );
 
 // Pre-save hook to hash the password
 userSchema.pre("save", async function (next) {
+  console.log("preMethod :", this);
   if (!this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
+
+
+// UserSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) {
+//         this.password = await bcrypt.hash(this.password, 10);
+//       }
+
+//   if (this.isModified("role") && this.role === 1) {
+//     console.log("here role is 1");
+//     this.orders = [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "Order",
+//       },
+//     ];
+//     this.products = [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "Product",
+//       },
+//     ];
+//   }
+
+//   next();
+// });
+
 
 // Method to compare entered password with hashed password
 userSchema.methods.comparePassword = async function (enteredPassword) {

@@ -4,9 +4,10 @@ const {
   blogComment,
   commentDataget,
 } = require("../controller/BlogComments/blogComments");
-const { authenticate } = require("../middleware/authMiddleware");
+const {isAuthenticated} = require("../middleware/index");
 
-router.post("/blogComment", authenticate, blogComment);
+
+router.post("/blogComment", isAuthenticated, blogComment);
 router.get("/blogComment/:id", commentDataget);
 
 module.exports = router;

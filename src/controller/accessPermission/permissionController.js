@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const Permission = require("../../modelsDb/PermissionModel"); 
+const permission = require("../../modelsDb/PermissionModel");
 
 const addPermission = async (req, res) => {
     try {
@@ -19,7 +19,7 @@ const addPermission = async (req, res) => {
         console.log(req.body);
 
         // Check if permission already exists
-        const existingPermission = await Permission.findOne({ permission_name });
+        const existingPermission = await permission.findOne({ permission_name });
         // console.log(existingPermission);
 
         if (existingPermission) {
@@ -37,7 +37,7 @@ const addPermission = async (req, res) => {
             objectPermission.is_default = parseInt(req.body.default);
         }
 
-        const newPermission = new Permission(objectPermission); // ✅ Fixed object creation
+        const newPermission = new permission(objectPermission); // ✅ Fixed object creation
         await newPermission.save();
 
         return res.status(201).json({

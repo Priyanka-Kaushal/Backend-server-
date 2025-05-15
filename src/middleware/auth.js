@@ -1,79 +1,79 @@
-const jwt = require('jsonwebtoken');
-const User = require('../modelsDb/User');
-require("dotenv").config(); 
+const jwt = require("jsonwebtoken");
+const { logger } = require("../logger/index");
 
 const generateToken = (user) => {
-  console.log("Generating token for user:", user);
-  return jwt.sign(
-    { 
-      id: user.id, 
-      email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+  const payload = {
+    userId: user._id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const secretKey = process.env.JWT_SECRET;
+
+  if (!secretKey) {
+    throw new Error("JWT secret key is missing!");
+  }
+
+  logger.debug(`Generating token for user: ${user.email}`);
+
+  try {
+    const token = jwt.sign(payload, secretKey, { expiresIn: "1h" });
+    logger.info(`Token generated for user: ${user.email}`);
+    return token;
+  } catch (error) {
+    logger.error(
+      `Error generating token for user ${user.email}: ${error.message}`
+    );
+    throw error;
+  }
 };
 
-// Generate JWT Token
-    const authToken = (newUser) => {
-      return jwt.sign(
-        { id: newUser.id, email: newUser.email, role: newUser.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-    };
-
-//  verify token for profile after login
-const verifyToken = async (req, res, next) => {
-  const token = req.body.token || req.query.token || req.headers["authorization"];
-
+const verifyAuthToken = (token) => {
   if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: "A token is required for authentication",
-    });
+    logger.error("No token provided");
+    return null;
   }
 
   try {
-    let bearerToken;
-    
-    // Check if token follows "Bearer <token>" format
-    if (token.startsWith("Bearer ")) {
-      bearerToken = token.split(" ")[1]; // Extract actual token
-    } else {
-      bearerToken = token; // Use token as is if it's not prefixed with "Bearer"
-    }
+    logger.debug(`Verifying token: ${token}`);
 
-    if (!bearerToken) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid token format",
-      });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded token :", decoded);
+    logger.info("Token verified successfully");
 
-    const decodedData = jwt.verify(bearerToken, process.env.JWT_SECRET);
-    req.user = decodedData.user;
-     
-    console.log( decodedData.user)
-    req.user = {
-      id: decodedData.id,
-      email: decodedData.email,
-    };
-   
-    console.log("decodedData for user:", req.user);
-
-    next();
+    return decoded;
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
+    if (error.name === "TokenExpiredError") {
+      logger.error(`Token expired: ${error.message}`);
+    } else if (error.name === "JsonWebTokenError") {
+      logger.error(`Invalid token signature: ${error.message}`);
+    } else {
+      logger.error(`Error verifying token: ${error.message}`);
+    }
+
+    return null;
   }
 };
 
-module.exports = { generateToken, authToken, verifyToken };
+const generateResetToken = (payload) => {
+  return jwt.sign(payload, process.env.RESET_SECRET, {
+    expiresIn: "1d",
+  });
+};
 
+const verifyResetToken = (token) => {
+  try {
+    const payload = jwt.verify(token, process.env.RESET_SECRET);
+    return payload;
+  } catch (error) {
+    logger.error(`Error verifying reset token: ${error.message}`);
+    return null;
+  }
+};
 
-
-
-
-
+module.exports = {
+  generateToken,
+  verifyAuthToken,
+  generateResetToken,
+  verifyResetToken,
+};

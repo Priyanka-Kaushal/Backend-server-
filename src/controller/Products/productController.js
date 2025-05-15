@@ -1,4 +1,4 @@
-const Product = require("../../modelsDb/Products.model"); // Import your model
+const Product = require("../../modelsDb/productSchema"); 
 
 // Define your product creation logic here
 const createProduct = async (req, res) => {

@@ -1,5 +1,5 @@
 const express = require("express");
-const { verifyToken } = require("../middleware/auth");
+const { verifyAuthToken } = require("../middleware/auth");
 const router = express.Router();
 const {
   blogCurator,
@@ -12,11 +12,11 @@ const upload = require("../middleware/uploadFile");
 
 // console.log("Upload Middleware:", upload);// Debugging
 
-router.post("/blogPost", verifyToken, upload.single("imageNew"), blogCurator);
+router.post("/blogPost", verifyAuthToken, upload.single("imageNew"), blogCurator);
 
 router.get("/blogpost/:id", blogDataGet);
-router.put("/blogpost/:id", verifyToken, blogDataUpdate);
-router.delete("/blogpost/:id", verifyToken, blogDelete);
+router.put("/blogpost/:id", verifyAuthToken, blogDataUpdate);
+router.delete("/blogpost/:id", verifyAuthToken, blogDelete);
 router.get("/blogposts", blogDataGetAll);
 
 module.exports = router;
