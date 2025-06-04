@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const permissionSchema = new mongoose.Schema(
   {
-    permission_name: {
+    name: {
       type: String,
       required: true,
       unique: true,
@@ -14,10 +14,10 @@ const permissionSchema = new mongoose.Schema(
       trim: true,
     },
     is_default: {
-      type: String,
-      enum: ["user", "admin", "superadmin"], 
-      default: "user",
-    },
+      type: [String],
+      enum: ["user", "admin", "superadmin"],
+      default: ["user"],
+    }
   },
   { timestamps: true }
 );

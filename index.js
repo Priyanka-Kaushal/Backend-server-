@@ -5,17 +5,27 @@ const connectDB = require("./src/utils/db");
 const cors = require("cors");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const User = require("./src/modelsDb/User");
+const User = require("./src/modelsDb/auth_model");
 const { logger, morganMiddleware } = require("./src/logger/index");
+const redisClient = require('./src/utils/redisClient');
 
 dotenv.config();
 
-connectDB();
 
 const app = express();
+
+connectDB();
 const port = process.env.PORT || 4000;
 
-app.use(cors());
+
+  
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ["Content-Type","Authorization"],
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morganMiddleware);
@@ -25,21 +35,29 @@ app.use(
   express.static(path.join(__dirname, "public/uploads"))
 );
 
-const authRoutes = require("./src/routes/userRoutes"); 
+const authRoutes = require("./src/routes/authRoutes");
 const permissionAccess = require("./src/routes/admin"); 
 const blogRoutes = require("./src/routes/blogRoutes");
 const blogCommentsRoutes = require("./src/routes/blogCommentsRoutes");
 const productRoutes = require("./src/routes/productsRoutes");
+const ordersDetails = require("./src/routes/ordersRoutes");
+const cartRoutes = require("./src/routes/cartRoute");
+// const wishlistRoutes = require("./src/routes/wishlistRouter");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", permissionAccess);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/blogs/comments", blogCommentsRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", ordersDetails);
+app.use("/api/cart", cartRoutes);
+// app.use("/api/wishlist", wishlistRoutes);
+
 
 app.listen(port, () => {
-  logger.info(`🚀 Server running at http://localhost:${port}`);
+  logger.info(`Server running at http://localhost:${port}`);
   logger.info(
-    `📂 Static files served from: ${path.join(__dirname, "public/uploads")}`
+    `Static files served from: ${path.join(__dirname, "public/uploads")}`
   );
 });

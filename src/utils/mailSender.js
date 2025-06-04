@@ -10,10 +10,14 @@ const sendOtpEmail = async (email, otp) => {
 
     const transporter = nodemailer.createTransport({
       service: 'gmail', 
+      port:465,
+        secure: true,
       auth: {
         user: process.env.EMAIL_USER,  
         pass: process.env.EMAIL_PASS,   
       },
+      logger: true,
+  debug: true
     });
 
 
@@ -28,7 +32,7 @@ const sendOtpEmail = async (email, otp) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent: ' + info.response);
-    logger.info(`📧 OTP email sent to ${email}`);
+    logger.info(`OTP email sent to ${email}`);
 
     return info; 
 

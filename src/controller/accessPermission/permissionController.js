@@ -14,12 +14,12 @@ const addPermission = async (req, res) => {
         }
 
         // Extract permission data from request
-        const { permission_name } = req.body;
+        const { name } = req.body;
        
         console.log(req.body);
 
         // Check if permission already exists
-        const existingPermission = await permission.findOne({ permission_name });
+        const existingPermission = await permission.findOne({ name });
         // console.log(existingPermission);
 
         if (existingPermission) {
@@ -30,7 +30,7 @@ const addPermission = async (req, res) => {
         }
 
         // Create permission object
-        let objectPermission = { permission_name };
+        let objectPermission = { name };
 
         console.log(objectPermission);
         if (req.body.default) {

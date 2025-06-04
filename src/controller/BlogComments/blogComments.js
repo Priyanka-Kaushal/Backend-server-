@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const BlogCommentDb = require("../../modelsDb/comment");
 const JWT = require("../../middleware/auth");
-const User = require("../../modelsDb/User");
+const User = require("../../modelsDb/auth_model");
 const comment = require("../../modelsDb/comment");
 const Blog = require("../../modelsDb/Blog");
 

@@ -1,7 +1,7 @@
 const { check } = require("express-validator");
 
 exports.permissionAddValidator = [
-    check("permission_name", "permission_name is required" ).not().isEmpty(),
+    check("name", "name is required" ).not().isEmpty(),
 ];
 
 exports.adminValidator = [
