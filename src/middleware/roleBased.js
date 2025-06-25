@@ -1,4 +1,4 @@
-module.exports = function checkRole(roles = []) {
+const checkRole = (roles = []) => {
   return (req, res, next) => {
     const userRole = req.user?.role; // make sure req.user exists
     if (!roles.includes(userRole)) {
@@ -7,3 +7,5 @@ module.exports = function checkRole(roles = []) {
     next();
   };
 };
+
+module.exports = checkRole;
